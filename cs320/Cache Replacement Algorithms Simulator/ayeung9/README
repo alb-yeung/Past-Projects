@@ -1,0 +1,5 @@
+Albert Yeung
+ayeung9
+B00611002
+
+Everything works correctly except the hot-cold LRU. I can't figure out where the problem is and the output number is close enough that it's a tiny error somewhere but I can't find it.

@@ -1,0 +1,26 @@
+#include <stdlib.h>
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+
+using namespace std;
+
+class Predictor{
+ public:
+  Predictor(string n);
+  string fileName;
+  string outputFile;
+  int tnt[2];
+  //long int add[MAX_SIZE];
+  //char taken[MAX_SIZE];
+  int lines = 0;
+  void read();
+  void allTaken();
+  void allNotTaken();
+  void bimodalOne(int tableSize);
+  void bimodalTwo();
+  void gShare();
+  void tournament();
+};
+

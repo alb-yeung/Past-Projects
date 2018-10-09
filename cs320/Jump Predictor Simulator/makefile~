@@ -1,0 +1,4 @@
+all: Tester
+
+Tester:	Predictor.o Predict.o
+	g++ Predictor.o Predict.o -o predictors

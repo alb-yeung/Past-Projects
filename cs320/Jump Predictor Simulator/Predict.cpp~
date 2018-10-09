@@ -1,0 +1,10 @@
+#include "Predictor.h"
+
+using namespace std;
+
+int main(){
+  //cout << "adf" << endl;
+  Predictor a = Predictor("long_trace2.txt");
+  a.read();
+  return 0;
+}

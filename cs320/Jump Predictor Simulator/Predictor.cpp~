@@ -1,0 +1,235 @@
+#include "Predictor.h"
+
+using namespace std;
+
+Predictor::Predictor(string n){
+  fileName = n;
+  lines = 0;
+}
+
+void Predictor::read(){
+  /*
+  allTaken();
+  allNotTaken();
+  */
+  /*
+  bimodalOne(16);
+  bimodalOne(32);
+  bimodalOne(128);
+  bimodalOne(256);
+  bimodalOne(512);
+  bimodalOne(1024);
+  bimodalOne(2048);
+  */
+  /*
+  bimodalTwo(16);
+  bimodalTwo(32);
+  bimodalTwo(128);
+  bimodalTwo(256);
+  bimodalTwo(512);
+  bimodalTwo(1024);
+  bimodalTwo(2048);
+  */
+}
+
+void Predictor::allTaken(){
+  ifstream f(fileName);
+  if (f.fail()){
+    cout << "File not found" << endl;
+    return;
+  }
+  stringstream stream;
+  string tempTaken;
+  string data;
+  int counter = 0;
+  
+  for (getline(f, data, '\n'); data != ""; getline(f, data, '\n')){
+    stream = stringstream(data);
+    getline(stream, tempTaken, ' ');
+    getline(stream, tempTaken, ' ');
+    if (tempTaken == "T")
+      counter ++;
+  }
+  
+  cout << "Always Taken Correctly Predicted: " << counter << endl;
+  f.close();
+}
+
+void Predictor::allNotTaken(){
+  ifstream f(fileName);
+  if (f.fail()){
+    cout << "File not found" << endl;
+    return;
+  }
+  stringstream stream;
+  string temp;
+  unsigned int ttemp;
+  string tempTaken;
+  string data;
+  int counter = 0;
+  
+  for (getline(f, data, '\n'); data != ""; getline(f, data, '\n')){
+    stream = stringstream(data);
+    getline(stream, tempTaken, ' ');
+    getline(stream, tempTaken, ' ');
+    if (tempTaken == "NT")
+      counter ++;
+  }
+  
+  cout << "Always Not Taken Correctly Predicted: " << counter << endl;
+  f.close();
+}
+
+void Predictor::bimodalOne(int tableSize){
+  char prediction[tableSize];
+  for (int i = 0; i < tableSize; i++){
+    prediction[i] = 'T';
+  }
+  ifstream f(fileName);
+  if (f.fail()){
+    cout << "File not found" << endl;
+    return;
+  }
+  stringstream stream;
+  unsigned long addr;
+  string tempTaken;
+  string data;
+  int counter = 0;
+  char* fix;
+  int index = 0;
+  for (getline(f, data, '\n'); data != ""; getline(f, data, '\n')){
+    stream = stringstream(data);
+    
+    getline(stream, tempTaken, ' ');
+    fix = new char[tempTaken.size() + 1];
+    copy(tempTaken.begin(), tempTaken.end(), fix);
+    fix[tempTaken.size()] = '\0';
+    addr = strtoul(fix, NULL, 0);
+    
+    getline(stream, tempTaken, ' ');
+    if (prediction[addr%tableSize] == 'T' && tempTaken == "T")
+      counter++;
+    else if (prediction[addr%tableSize] == 'N' && tempTaken == "NT")
+      counter++;
+    else{
+      if (tempTaken == "T")
+	prediction[addr%tableSize] = 'T';
+      else prediction[addr%tableSize] = 'N';
+    }
+  }
+  cout << "Bimodal size " << tableSize << " Correctly Predicted: " << counter << endl;
+  f.close();
+}
+
+void Predictor::bimodalTwo(int tableSize){
+  char prediction[tableSize];
+  for (int i = 0; i < tableSize; i++){
+    prediction[i] = 'D';
+  }
+  /*
+    A = NN
+    B = NT
+    C = TN
+    D = TT
+   */
+  ifstream f(fileName);
+  if (f.fail()){
+    cout << "File not found" << endl;
+    return;
+  }
+  stringstream stream;
+  unsigned long addr;
+  string tempTaken;
+  string data;
+  int counter = 0;
+  char* fix;
+  for (getline(f, data, '\n'); data != ""; getline(f, data, '\n')){
+    stream = stringstream(data);
+    
+    getline(stream, tempTaken, ' ');
+    fix = new char[tempTaken.size() + 1];
+    copy(tempTaken.begin(), tempTaken.end(), fix);
+    fix[tempTaken.size()] = '\0';
+    addr = strtoul(fix, NULL, 0);
+    
+    getline(stream, tempTaken, ' ');
+    if (prediction[addr%tableSize] == 'A'){
+      if (tempTaken == "NT")
+	counter++;
+      else prediction[addr%tableSize]++;
+    }else if (prediction[addr%tableSize] == 'B'){
+      if (tempTaken == "NT"){
+	counter++;
+	prediction[addr%tableSize]--;
+      }else prediction[addr%tableSize]++;
+    }else if (prediction[addr%tableSize] == 'C'){
+      if (tempTaken == "T"){
+	counter++;
+	prediction[addr%tableSize]++;
+      }else prediction[addr%tableSize]--;
+    }else{
+      if (tempTaken == "T")
+	counter++;
+      else prediction[addr%tableSize]--;
+    }
+  }
+  cout << "Bimodal size " << tableSize << " Correctly Predicted: " << counter << endl;
+  f.close();
+}
+
+void Predictor::gshare(int historyLength){
+  char prediction[2048];
+  for (int i = 0; i < 2048; i++){
+    prediction[i] = 'D';
+  }
+  ifstream f(fileName);
+  if (f.fail()){
+    cout << "File not found" << endl;
+    return;
+  }
+  stringstream stream;
+  unsigned long addr;
+  string tempTaken;
+  string data;
+  int counter = 0;
+  char* fix;
+  int index;
+  int history = 0;
+  
+  for (getline(f, data, '\n'); data != ""; getline(f, data, '\n')){
+    stream = stringstream(data);
+    
+    getline(stream, tempTaken, ' ');
+    fix = new char[tempTaken.size() + 1];
+    copy(tempTaken.begin(), tempTaken.end(), fix);
+    fix[tempTaken.size()] = '\0';
+    addr = strtoul(fix, NULL, 0);
+
+    index = (history%(exp2(historyLength))) ^ addr;
+    index = index%(exp2(11));
+
+    getline(stream, tempTaken, ' ');
+    if (prediction[index] == 'A'){
+      if (tempTaken == "NT")
+	counter++;
+      else prediction[index]++;
+    }else if (prediction[index] == 'B'){
+      if (tempTaken == "NT"){
+	counter++;
+	prediction[index]--;
+      }else prediction[index]++;
+    }else if (prediction[index] == 'C'){
+      if (tempTaken == "T"){
+	counter++;
+	prediction[index]++;
+      }else prediction[index]--;
+    }else{
+      if (tempTaken == "T")
+	counter++;
+      else prediction[index]--;
+    }
+  }
+
+  cout << "Gshare size " << tableSize << " Correctly Predicted: " << counter << endl;
+  f.close();
+}
