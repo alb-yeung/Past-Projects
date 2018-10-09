@@ -1,0 +1,20 @@
+#include "CourseMap.h"
+#include "requirements.h"
+
+using namespace std;
+
+typedef unordered_map<string, string> classTable;
+
+Student{
+ private:
+  classTable taken;
+  int totalCredits;
+  int totalC, totalH, totalF;
+  string errorMessage;
+  
+ public:
+  Student();
+  bool checkClass(string courseName);
+  
+
+};
