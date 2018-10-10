@@ -1,4 +1,7 @@
-Albert Yeung ayeung9@binghamton.edu
-My code was not tested on bingsuns
-Program runs with "./run <input-file> <output-file>"
-The encrypt, decrypt and key scheduler algorithms are the ones from the paper. However, I hard coded in c so even if the key given is longer, only the first 16 bytes are used and it will break if a shorter key is given.
+Encryption/Decryption with RC6 with w=32, r=20, b=16
+If a bigger key is supplied it only reads the first 16 bytes
+
+Input file example:
+Encryption
+plaintext: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+userkey: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
