@@ -1,0 +1,4 @@
+Albert Yeung ayeung9@binghamton.edu
+My code was not tested on bingsuns
+Program runs with "./run <input-file> <output-file>"
+The encrypt, decrypt and key scheduler algorithms are the ones from the paper. However, I hard coded in c so even if the key given is longer, only the first 16 bytes are used and it will break if a shorter key is given.
